@@ -16,6 +16,9 @@ async function getPost(slug: string, locale: string) {
     encodeURIComponent(slug),
     slug.split('-').map(enc).join('-'),
     decodeURIComponent(slug),
+        slug.normalize('NFC').split('-').map(enc).join('-'),
+    slug.normalize('NFD').split('-').map(enc).join('-'),
+    (() => { try { return decodeURIComponent(slug).split('-').map(enc).join('-'); } catch { return slug; } })(),
   ]));
   const { data } = await supabase
     .from('posts')
