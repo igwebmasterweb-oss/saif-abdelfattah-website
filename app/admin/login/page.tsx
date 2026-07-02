@@ -22,49 +22,87 @@ export default function AdminLogin() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError('بيانات الدخول غير صحيحة. حاول مرة أخرى.');
+      setError('بيانات غير صحيحة. حاول مرة أخرى.');
       setLoading(false);
     } else {
       router.push('/admin');
-      router.refresh();
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
-      <div className="bg-white border border-gray-200 rounded p-8 w-full max-w-sm">
-        <h1 className="text-xl font-bold text-gray-900 mb-6 text-center">دخول لوحة التحكم</h1>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">البريد الإلكتروني</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-500"
-              placeholder="admin@example.com"
-            />
+    <div
+      className="min-h-screen flex items-center justify-center bg-[#f5f4f2]"
+      dir="rtl"
+      style={{ fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}
+    >
+      <div className="w-full max-w-sm">
+        {/* Card */}
+        <div className="bg-white rounded-lg border border-[#e8e6e3] shadow-sm overflow-hidden">
+          {/* Header stripe */}
+          <div className="bg-[#1e3a5f] px-8 py-6 text-center">
+            <span className="block text-lg font-bold text-white mb-1">أ.د. سيف عبد الفتاح</span>
+            <span className="block text-xs text-[#9fb2d1]">لوحة الإدارة</span>
+            {/* Orange accent line */}
+            <div className="flex justify-center mt-3">
+              <span className="block w-8 h-0.5 bg-[#e8601c] rounded-full" />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">كلمة المرور</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-500"
-            />
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gray-900 text-white py-2 text-sm hover:bg-gray-700 transition-colors disabled:opacity-50"
+
+          {/* Form */}
+          <form onSubmit={handleLogin} className="px-8 py-7 space-y-5">
+            <div>
+              <label className="block text-xs font-medium text-[#1e3a5f] mb-2">
+                البريد الإلكتروني
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border border-[#e8e6e3] rounded px-3 py-2.5 text-sm text-[#1a1a1a] bg-[#fafaf9] focus:outline-none focus:border-[#1e3a5f] focus:bg-white transition-colors"
+                placeholder="admin@example.com"
+                dir="ltr"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-[#1e3a5f] mb-2">
+                كلمة المرور
+              </label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-[#e8e6e3] rounded px-3 py-2.5 text-sm text-[#1a1a1a] bg-[#fafaf9] focus:outline-none focus:border-[#1e3a5f] focus:bg-white transition-colors"
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#e8601c] text-white font-semibold text-sm py-2.5 rounded hover:bg-[#c4511a] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? 'جاري الدخول...' : 'دخول'}
+            </button>
+          </form>
+        </div>
+
+        {/* Back to site link */}
+        <div className="text-center mt-4">
+          <a
+            href="/"
+            className="text-xs text-[#4a4a4a] hover:text-[#1e3a5f] transition-colors"
           >
-            {loading ? 'جاري تسجيل الدخول...' : 'دخول'}
-          </button>
-        </form>
+            ← العودة إلى الموقع
+          </a>
+        </div>
       </div>
     </div>
   );
