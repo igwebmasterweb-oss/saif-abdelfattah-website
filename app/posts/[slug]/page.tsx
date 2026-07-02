@@ -10,15 +10,16 @@ async function getPost(slug: string, locale: string) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { cookies: { getAll: () => cookieStore.getAll() } }
   );
-    const enc = (s: string) => encodeURIComponent(s).replace(/%[0-9A-F]{2}/g, (m) => m.toLowerCase());
+  const encLower = (s: string) => encodeURIComponent(s).replace(/%[0-9a-f]{2}/gi, (m) => m.toLowerCase());
+  let decoded = slug;
+  try { decoded = decodeURIComponent(slug); } catch {}
   const candidates = Array.from(new Set([
     slug,
-    encodeURIComponent(slug),
-    slug.split('-').map(enc).join('-'),
-    decodeURIComponent(slug),
-        slug.normalize('NFC').split('-').map(enc).join('-'),
-    slug.normalize('NFD').split('-').map(enc).join('-'),
-    (() => { try { return decodeURIComponent(slug).split('-').map(enc).join('-'); } catch { return slug; } })(),
+    slug.toLowerCase(),
+    decoded,
+    encLower(decoded),
+    encLower(decoded.normalize('NFC')),
+    encLower(decoded.normalize('NFD')),
   ]));
   const { data } = await supabase
     .from('posts')
