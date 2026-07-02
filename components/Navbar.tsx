@@ -1,120 +1,95 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { NAV, SITE, normLocale } from '@/lib/i18n';
 
-interface NavbarProps {
-  locale?: string;
-}
+export default function Navbar({ locale = 'ar' }: { locale?: string }) {
+  const [open, setOpen] = useState(false);
+  const loc = normLocale(locale);
+  const isAr = loc === 'ar';
+  const t = NAV[loc];
+  const site = SITE[loc];
+  const pathname = usePathname() || '/';
+  const params = useSearchParams();
 
-export default function Navbar({ locale = 'ar' }: NavbarProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const isAr = locale === 'ar';
-  const dir = isAr ? 'rtl' : 'ltr';
+  // رابط تبديل اللغة يحافظ على المسار الحالي
+  const otherLoc = isAr ? 'en' : 'ar';
+  const sp = new URLSearchParams(params?.toString());
+  sp.set('lang', otherLoc);
+  const langHref = `${pathname}?${sp.toString()}`;
 
-  const t = {
-    logo: isAr ? 'سيف عبد الفتاح' : 'Saif Abd Al-Fattah',
-    about: isAr ? 'عن المؤلف' : 'About',
-    posts: isAr ? 'المقالات' : 'Articles',
-    books: isAr ? 'الكتب' : 'Books',
-    studies: isAr ? 'الدراسات' : 'Studies',
-    videos: isAr ? 'فيديوهات' : 'Videos',
-    contact: isAr ? 'تواصل' : 'Contact',
-    lang: isAr ? 'English' : 'عربي',
-    langHref: isAr ? '?lang=en' : '?lang=ar',
-  };
-
-  const navLinks = [
-    { label: t.about, href: `/about?lang=${locale}` },
-    { label: t.posts, href: `/posts?lang=${locale}` },
-    { label: t.books, href: `/books?lang=${locale}` },
-    { label: t.studies, href: `/studies?lang=${locale}` },
-    { label: t.videos, href: `/videos?lang=${locale}` },
-    { label: t.contact, href: `/contact?lang=${locale}` },
+  const links = [
+    { label: t.posts, href: `/posts?lang=${loc}` },
+    { label: t.about, href: `/about?lang=${loc}` },
+    { label: t.contact, href: `/contact?lang=${loc}` },
   ];
 
   return (
-    <nav
-      dir={dir}
-      className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#e8e6e3] shadow-sm"
-    >
+    <nav dir={isAr ? 'rtl' : 'ltr'} className="sticky top-0 z-50 bg-paper-50/90 backdrop-blur-md border-b border-paper-300">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="h-16 flex items-center justify-between">
-          {/* Logo */}
-          <Link
-            href={`/?lang=${locale}`}
-            className="flex items-center gap-2 group"
-          >
-            <span className="w-1 h-7 bg-[#e8601c] rounded-full" />
-            <span className="text-base md:text-lg font-bold text-[#1e3a5f] group-hover:text-[#e8601c] transition-colors">
-              {t.logo}
+          {/* الشعار */}
+          <Link href={`/?lang=${loc}`} className="flex items-center gap-2.5 group">
+            <Logo />
+            <span className="font-display text-lg md:text-xl font-bold text-navy group-hover:text-brand transition-colors">
+              {site.name}
             </span>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-0.5">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="px-3 py-2 text-sm text-[#4a4a4a] hover:text-[#1e3a5f] hover:bg-[#f5f4f2] rounded transition-colors"
-              >
-                {link.label}
+          {/* روابط سطح المكتب */}
+          <div className="hidden md:flex items-center gap-1">
+            {links.map((l) => (
+              <Link key={l.href} href={l.href}
+                className="px-3.5 py-2 text-sm text-ink-soft hover:text-navy hover:bg-paper-100 rounded transition-colors">
+                {l.label}
               </Link>
             ))}
-            {/* Language toggle */}
-            <a
-              href={t.langHref}
-              className="mx-2 text-xs font-medium border border-[#1e3a5f] text-[#1e3a5f] rounded-full px-3 py-1 hover:bg-[#1e3a5f] hover:text-white transition-colors"
-            >
+            <a href={langHref}
+              className="ms-2 text-xs font-medium border border-navy/30 text-navy rounded-full px-3.5 py-1.5 hover:bg-navy hover:text-white transition-colors">
               {t.lang}
             </a>
           </div>
 
-          {/* Mobile: lang + burger */}
+          {/* الجوال */}
           <div className="flex md:hidden items-center gap-2">
-            <a
-              href={t.langHref}
-              className="text-xs font-medium border border-[#1e3a5f] text-[#1e3a5f] rounded-full px-2.5 py-1 hover:bg-[#1e3a5f] hover:text-white transition-colors"
-            >
+            <a href={langHref}
+              className="text-xs font-medium border border-navy/30 text-navy rounded-full px-3 py-1 hover:bg-navy hover:text-white transition-colors">
               {t.lang}
             </a>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2 rounded text-[#1e3a5f] hover:bg-[#f5f4f2] transition-colors"
-              aria-label="قائمة التنقل"
-            >
-              {menuOpen ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-              )}
+            <button onClick={() => setOpen(!open)} className="p-2 rounded text-navy hover:bg-paper-100 transition-colors" aria-label="menu">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {open
+                  ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
+                  : <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>}
+              </svg>
             </button>
           </div>
         </div>
 
-        {/* Mobile dropdown */}
-        {menuOpen && (
-          <div className="md:hidden border-t border-[#e8e6e3] py-3 space-y-0.5">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="block px-4 py-2.5 text-sm text-[#4a4a4a] hover:text-[#1e3a5f] hover:bg-[#f5f4f2] rounded transition-colors"
-              >
-                {link.label}
+        {open && (
+          <div className="md:hidden border-t border-paper-300 py-3 space-y-0.5">
+            {links.map((l) => (
+              <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+                className="block px-4 py-2.5 text-sm text-ink-soft hover:text-navy hover:bg-paper-100 rounded transition-colors">
+                {l.label}
               </Link>
             ))}
           </div>
         )}
       </div>
     </nav>
+  );
+}
+
+/** شعار: قلم/محبرة مُجرّد داخل إطار — يرمز للكتابة والفكر */
+function Logo() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" aria-label="logo" className="text-brand">
+      <rect x="2.5" y="2.5" width="35" height="35" rx="8" stroke="currentColor" strokeWidth="2" />
+      <path d="M13 27L27 13" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M24 10.5L29.5 16L27 13Z" fill="currentColor" />
+      <circle cx="13.5" cy="26.5" r="2.2" fill="#1b2e49" />
+    </svg>
   );
 }

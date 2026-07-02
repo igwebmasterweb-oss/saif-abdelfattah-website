@@ -1,138 +1,92 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { SITE, normLocale } from '@/lib/i18n';
 
-const t = {
+export const revalidate = 3600;
+
+const T = {
   ar: {
+    kicker: 'المدرسة الحضارية',
     title: 'عن الكاتب',
-    name: 'أ.د. سيف الدين عبد الفتاح',
-    school: 'المدرسة الحضارية',
     bio: 'أستاذ متخصص في العلوم السياسية، ومفكر إسلامي معاصر يكتب في الفكر الحضاري والسياسي والاجتماعي. صدر له عدد من الكتب والدراسات، ويسعى إلى تأصيل خطاب حضاري معاصر يجمع بين الأصالة والمعاصرة.',
-    expertise: 'تخصصاته',
+    expertise: 'مجالات التخصص',
     areas: ['الفكر السياسي الإسلامي', 'الفكر الحضاري', 'علم السياسة المقارن', 'الاجتماع السياسي'],
-    stats: [{ num: '500+', label: 'مقالة' }, { num: '36', label: 'دراسة علمية' }, { num: '5', label: 'كتب' }],
-    read_posts: 'اطلع على المقالات',
-    lang_switch: 'English',
-    lang_href: '/about?lang=en',
-    nav_about: 'عن الكاتب',
-    nav_posts: 'المقالات',
-    nav_books: 'الكتب',
-    nav_contact: 'تواصل',
+    stats: [{ num: '١٠٠٠+', label: 'مقالة' }, { num: '٣٦', label: 'دراسة علمية' }, { num: '٥', label: 'كتب' }],
+    readPosts: 'اطلع على المقالات',
   },
   en: {
+    kicker: 'The Civilizational School',
     title: 'About the Author',
-    name: 'Prof. Saif Al-Din Abd Al-Fattah',
-    school: 'The Civilizational School',
     bio: 'A professor of political science and contemporary Islamic thinker writing on civilizational, political, and social thought. Author of numerous books and studies, he seeks to establish a contemporary civilizational discourse that combines authenticity and modernity.',
     expertise: 'Areas of Expertise',
     areas: ['Islamic Political Thought', 'Civilizational Thought', 'Comparative Political Science', 'Political Sociology'],
-    stats: [{ num: '500+', label: 'Articles' }, { num: '36', label: 'Academic Studies' }, { num: '5', label: 'Books' }],
-    read_posts: 'Browse Articles',
-    lang_switch: 'عربي',
-    lang_href: '/about?lang=ar',
-    nav_about: 'About',
-    nav_posts: 'Articles',
-    nav_books: 'Books',
-    nav_contact: 'Contact',
+    stats: [{ num: '1000+', label: 'Articles' }, { num: '36', label: 'Studies' }, { num: '5', label: 'Books' }],
+    readPosts: 'Browse Articles',
   },
 } as const;
-
-type Locale = keyof typeof t;
 
 interface Props { searchParams: Promise<{ lang?: string }>; }
 
 export default async function AboutPage({ searchParams }: Props) {
   const sp = await searchParams;
-  const locale: Locale = sp.lang === 'ar' ? 'ar' : 'en';
-  const isAr = locale === 'ar';
-  const dir = isAr ? 'rtl' : 'ltr';
-  const tr = t[locale];
+  const loc = normLocale(sp.lang);
+  const isAr = loc === 'ar';
+  const tr = T[loc];
+  const site = SITE[loc];
 
   return (
-    <div dir={dir} lang={locale} className="min-h-screen bg-white">
-      {/* NAVBAR */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-warm-200">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href={`/?lang=${locale}`} className="text-navy text-lg font-bold tracking-tight">
-            {isAr ? 'سيف عبد الفتاح' : 'Saif Abd Al-Fattah'}
-          </Link>
-          <div className="flex items-center gap-1">
-            {[
-              { label: tr.nav_about, href: `/about?lang=${locale}` },
-              { label: tr.nav_posts, href: `/posts?lang=${locale}` },
-              { label: tr.nav_books, href: `/books?lang=${locale}` },
-              { label: tr.nav_contact, href: `/contact?lang=${locale}` },
-            ].map(({ label, href }) => (
-              <Link key={label} href={href} className="px-3 py-2 text-sm text-gray-600 hover:text-navy rounded transition-colors">{label}</Link>
-            ))}
-            <Link href={tr.lang_href} className="ml-2 text-xs border border-navy-300 text-navy-600 rounded px-3 py-1.5 hover:bg-navy hover:text-white transition-colors">
-              {tr.lang_switch}
-            </Link>
-          </div>
-        </div>
-      </nav>
+    <div dir={isAr ? 'rtl' : 'ltr'} className="min-h-screen flex flex-col bg-paper-50">
+      <Suspense fallback={<div className="h-16 border-b border-paper-300" />}>
+        <Navbar locale={loc} />
+      </Suspense>
 
-      {/* HERO */}
-      <section className="bg-navy py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-4xl font-bold text-white mb-3">{tr.name}</h1>
-          <div className="flex justify-center mb-4">
-            <span className="block w-10 h-1 rounded-full bg-brand" />
+      <main className="flex-1">
+        {/* HERO */}
+        <section className="relative bg-navy-900 overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.06]"
+            style={{ backgroundImage: 'radial-gradient(circle at 20% 30%, #b08d3e 0, transparent 40%), radial-gradient(circle at 80% 70%, #c04f17 0, transparent 40%)' }} />
+          <div className="relative max-w-4xl mx-auto px-4 md:px-6 py-20 md:py-28 text-center">
+            <p className="text-gold-300 text-xs font-medium tracking-[0.25em] uppercase mb-4">{tr.kicker}</p>
+            <h1 className="font-display text-4xl md:text-5xl font-bold text-white">{site.fullName}</h1>
+            <div className="ornament ornament--light mt-6 mx-auto" />
           </div>
-          <p className="text-navy-200 text-lg">{tr.school}</p>
-        </div>
-      </section>
+        </section>
 
-      {/* STATS */}
-      <section className="bg-brand py-8">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="grid grid-cols-3 gap-4 text-center">
-            {tr.stats.map(({ num, label }) => (
-              <div key={label}>
-                <div className="text-3xl font-bold text-white mb-1">{num}</div>
-                <div className="text-sm text-white/80">{label}</div>
+        {/* STATS */}
+        <section className="bg-white border-b border-paper-300">
+          <div className="max-w-4xl mx-auto px-6 py-10 grid grid-cols-3 gap-4 text-center">
+            {tr.stats.map((s) => (
+              <div key={s.label}>
+                <div className="font-display text-3xl md:text-4xl font-bold text-brand mb-1">{s.num}</div>
+                <div className="text-sm text-ink-muted">{s.label}</div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* BIO */}
-      <section className="bg-warm-50 py-16">
-        <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-xl font-bold text-navy mb-2">{tr.title}</h2>
-          <div className="w-8 h-0.5 bg-brand mb-6" />
-          <p className="text-gray-600 leading-relaxed text-base mb-10">{tr.bio}</p>
+        {/* BIO */}
+        <section className="max-w-prose mx-auto px-4 md:px-6 py-16">
+          <p className="kicker">{tr.title}</p>
+          <div className="ornament mt-3 mb-8" />
+          <p className="text-lg text-ink-soft leading-loose mb-12">{tr.bio}</p>
 
-          <h3 className="text-lg font-semibold text-navy mb-4">{tr.expertise}</h3>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
-            {tr.areas.map((area) => (
-              <li key={area} className="flex items-center gap-2 text-sm text-gray-700">
-                <span className="w-2 h-2 rounded-full bg-brand flex-shrink-0" />
-                {area}
+          <h2 className="font-display text-2xl font-bold text-navy mb-6">{tr.expertise}</h2>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+            {tr.areas.map((a) => (
+              <li key={a} className="flex items-center gap-3 text-ink-soft">
+                <span className="w-2 h-2 rounded-full bg-gold flex-shrink-0" />
+                {a}
               </li>
             ))}
           </ul>
 
-          <Link href={`/posts?lang=${locale}`} className="btn-primary">
-            {tr.read_posts}
-          </Link>
-        </div>
-      </section>
+          <Link href={`/posts?lang=${loc}`} className="btn-primary">{tr.readPosts}</Link>
+        </section>
+      </main>
 
-      {/* FOOTER */}
-      <footer className="bg-navy-900 text-white">
-        <div className="max-w-6xl mx-auto px-6 py-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="font-bold">{tr.name}</p>
-            <div className="flex gap-5 text-sm text-navy-300">
-              <Link href={`/posts?lang=${locale}`} className="hover:text-white">{tr.nav_posts}</Link>
-              <Link href={`/contact?lang=${locale}`} className="hover:text-white">{tr.nav_contact}</Link>
-            </div>
-          </div>
-          <div className="border-t border-navy-700 mt-8 pt-6 text-xs text-navy-400 text-center">
-            {isAr ? '© 2025 جميع الحقوق محفوظة' : '© 2025 All rights reserved'}
-          </div>
-        </div>
-      </footer>
+      <Footer locale={loc} />
     </div>
   );
 }

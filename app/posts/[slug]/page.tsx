@@ -1,146 +1,133 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import type { Metadata } from 'next';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import PostCard from '@/components/PostCard';
+import { getPost, getRelatedPosts } from '@/lib/queries';
+import { cleanText, decodeEntities, formatDate } from '@/lib/utils';
+import { NAV, normLocale } from '@/lib/i18n';
 
-async function getPost(slug: string, locale: string) {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll() } }
-  );
-  const encLower = (s: string) => encodeURIComponent(s).replace(/%[0-9a-f]{2}/gi, (m) => m.toLowerCase());
-  let decoded = slug;
-  try { decoded = decodeURIComponent(slug); } catch {}
-  const candidates = Array.from(new Set([
-    slug,
-    slug.toLowerCase(),
-    decoded,
-    encLower(decoded),
-    encLower(decoded.normalize('NFC')),
-    encLower(decoded.normalize('NFD')),
-  ]));
-  const { data } = await supabase
-    .from('posts')
-    .select(`id, slug, published_at, featured_image_url,
-      post_translations!inner(title, excerpt, content, locale)`)
-            .in('slug', candidates)
-    .eq('status', 'published')
-    .eq('post_translations.locale', locale)
-            .limit(1)
-        .maybeSingle();
-  return data;
-}
+export const revalidate = 600;
 
 interface Props {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ lang?: string }>;
 }
 
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const { lang } = await searchParams;
+  const loc = normLocale(lang);
+  const post = await getPost(slug, loc);
+  if (!post) return { title: NAV[loc].posts };
+  const title = cleanText(post.title);
+  const desc = cleanText(post.excerpt) || title;
+  return {
+    title,
+    description: desc.slice(0, 160),
+    openGraph: {
+      title,
+      description: desc.slice(0, 160),
+      images: post.featured_image_url ? [post.featured_image_url] : undefined,
+    },
+  };
+}
+
 export default async function PostPage({ params, searchParams }: Props) {
   const { slug } = await params;
-  const sp = await searchParams;
-  const locale = sp.lang === 'ar' ? 'ar' : 'en';
-  const isAr = locale === 'ar';
-  const dir = isAr ? 'rtl' : 'ltr';
+  const { lang } = await searchParams;
+  const loc = normLocale(lang);
+  const isAr = loc === 'ar';
+  const t = NAV[loc];
 
-  const post = await getPost(slug, locale);
+  const post = await getPost(slug, loc);
   if (!post) notFound();
 
-  const tr = Array.isArray(post.post_translations)
-    ? post.post_translations[0]
-    : post.post_translations;
+  const title = cleanText(post.title);
+  const date = formatDate(post.published_at, loc);
+  const alt = post.featured_image_alt || title;
+  const primaryCat = post.categories[0] || null;
+  const related = await getRelatedPosts(post.id, primaryCat?.id ?? null, loc, 3);
 
-  const date = post.published_at
-    ? new Date(post.published_at).toLocaleDateString(
-        locale === 'ar' ? 'ar-EG' : 'en-US',
-        { year: 'numeric', month: 'long', day: 'numeric' }
-      )
-    : '';
-
-  const navT = {
-    ar: { about: 'عن الكاتب', posts: 'المقالات', books: 'الكتب', contact: 'تواصل', back: '→ العودة للمقالات', lang_switch: 'English', lang_href: `/posts/${slug}?lang=en` },
-    en: { about: 'About', posts: 'Articles', books: 'Books', contact: 'Contact', back: '← Back to articles', lang_switch: 'عربي', lang_href: `/posts/${slug}?lang=ar` },
-  }[locale];
+  const body = post.content_html ? decodeEntities(post.content_html) : '';
 
   return (
-    <div dir={dir} lang={locale} className="min-h-screen bg-white">
-      {/* NAVBAR */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-warm-200">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href={`/?lang=${locale}`} className="text-navy text-lg font-bold tracking-tight">
-            {isAr ? 'سيف عبد الفتاح' : 'Saif Abd Al-Fattah'}
-          </Link>
-          <div className="flex items-center gap-1">
-            {[
-              { label: navT.about, href: `/about?lang=${locale}` },
-              { label: navT.posts, href: `/posts?lang=${locale}` },
-              { label: navT.books, href: `/books?lang=${locale}` },
-              { label: navT.contact, href: `/contact?lang=${locale}` },
-            ].map(({ label, href }) => (
-              <Link key={label} href={href} className="px-3 py-2 text-sm text-gray-600 hover:text-navy rounded transition-colors">{label}</Link>
-            ))}
-            <Link href={navT.lang_href} className="ml-2 text-xs border border-navy-300 text-navy-600 rounded px-3 py-1.5 hover:bg-navy hover:text-white transition-colors">
-              {navT.lang_switch}
+    <div dir={isAr ? 'rtl' : 'ltr'} className="min-h-screen flex flex-col bg-paper-50">
+      <Suspense fallback={<div className="h-16 border-b border-paper-300" />}>
+        <Navbar locale={loc} />
+      </Suspense>
+
+      <main className="flex-1">
+        {/* ترويسة المقال */}
+        <header className="bg-white border-b border-paper-300">
+          <div className="max-w-prose mx-auto px-4 md:px-6 pt-12 md:pt-16 pb-10">
+            <Link href={`/posts?lang=${loc}`} className="text-sm text-brand hover:text-brand-700">
+              {isAr ? '→' : '←'} {t.back}
             </Link>
+
+            {post.categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-6">
+                {post.categories.map((c) => (
+                  <Link
+                    key={c.id}
+                    href={`/posts?lang=${loc}&cat=${c.id}`}
+                    className="chip bg-paper-100 border-paper-300 text-navy hover:border-brand hover:text-brand"
+                  >
+                    {c.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            <h1 className="font-display text-3xl md:text-[2.6rem] leading-tight font-bold text-navy mt-5">
+              {title}
+            </h1>
+
+            {date && <p className="text-sm text-ink-muted mt-4">{date}</p>}
+            <div className="ornament mt-6" />
           </div>
-        </div>
-      </nav>
+        </header>
 
-      {/* ARTICLE */}
-      <main className="max-w-3xl mx-auto px-6 py-14">
-        {/* Back link */}
-        <Link href={`/posts?lang=${locale}`} className="text-sm text-brand hover:underline mb-8 inline-block">
-          {navT.back}
-        </Link>
-
-        {/* Featured image */}
+        {/* صورة بارزة */}
         {post.featured_image_url && (
-          <div className="aspect-video overflow-hidden rounded mb-8">
-            <img src={post.featured_image_url} alt={tr?.title || ''}
-              className="w-full h-full object-cover" />
+          <div className="max-w-4xl mx-auto px-4 md:px-6 -mt-2 mb-10">
+            <div className="rounded-xl overflow-hidden shadow-soft bg-paper-200 aspect-[16/9]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={post.featured_image_url} alt={alt} className="w-full h-full object-cover" />
+            </div>
           </div>
         )}
 
-        {/* Meta */}
-        {date && <p className="text-xs text-gray-400 mb-3">{date}</p>}
+        {/* المحتوى */}
+        <article className="max-w-prose mx-auto px-4 md:px-6 pb-16">
+          {body ? (
+            <div className="article-body" dangerouslySetInnerHTML={{ __html: body }} />
+          ) : (
+            <p className="text-ink-muted">{t.noResults}</p>
+          )}
+        </article>
 
-        {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold text-navy mb-3 leading-snug">
-          {tr?.title}
-        </h1>
-        <div className="w-10 h-1 rounded-full bg-brand mb-6" />
-
-        {/* Excerpt */}
-        {tr?.excerpt && (
-          <p className="text-lg text-gray-500 font-light mb-8 leading-relaxed">{tr.excerpt}</p>
-        )}
-
-        {/* Content */}
-        {tr?.content && (
-          <div
-            className="prose prose-navy max-w-none text-gray-700 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: tr.content }}
-          />
+        {/* مقالات ذات صلة */}
+        {related.length > 0 && (
+          <section className="bg-white border-t border-paper-300">
+            <div className="max-w-6xl mx-auto px-4 md:px-6 py-14">
+              <p className="kicker">{t.latest}</p>
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-navy mt-2 mb-8">
+                {isAr ? 'اقرأ أيضًا' : 'Read also'}
+              </h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {related.map((r) => (
+                  <PostCard key={r.id} post={r} locale={loc} variant="grid" />
+                ))}
+              </div>
+            </div>
+          </section>
         )}
       </main>
 
-      {/* FOOTER */}
-      <footer className="bg-navy-900 text-white mt-16">
-        <div className="max-w-6xl mx-auto px-6 py-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="font-bold">{isAr ? 'أ.د. سيف الدين عبد الفتاح' : 'Prof. Saif Abd Al-Fattah'}</p>
-            <div className="flex gap-5 text-sm text-navy-300">
-              <Link href={`/posts?lang=${locale}`} className="hover:text-white">{navT.posts}</Link>
-              <Link href={`/about?lang=${locale}`} className="hover:text-white">{navT.about}</Link>
-            </div>
-          </div>
-          <div className="border-t border-navy-700 mt-8 pt-6 text-xs text-navy-400 text-center">
-            {isAr ? '© 2025 جميع الحقوق محفوظة' : '© 2025 All rights reserved'}
-          </div>
-        </div>
-      </footer>
+      <Footer locale={loc} />
     </div>
   );
 }

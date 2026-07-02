@@ -3,169 +3,160 @@
 @tailwind utilities;
 
 /* ============================================================
-   Brand CSS Custom Properties
-   Navy  : #1e3a5f  (logo + dark sections on old site)
-   Orange: #e8601c  (headings, CTAs, highlights on old site)
+   موقع أ.د. سيف الدين عبد الفتاح — نظام التصميم
+   طابع: فخم كلاسيكي / أكاديمي
+   العرض: Amiri (نسخ) | المتن: IBM Plex Sans Arabic
+   الألوان: كحلي عميق + برتقالي دافئ + ذهبي مكتوم على ورق دافئ
    ============================================================ */
 :root {
-  /* Brand */
-  --color-navy:       #1e3a5f;
-  --color-navy-dark:  #142847;
-  --color-navy-light: #2d5491;
-  --color-orange:     #e8601c;
-  --color-orange-dark:#c4511a;
-  --color-orange-light:#f48a3f;
+  --navy: #1b2e49;
+  --navy-dark: #0c1728;
+  --brand: #c04f17;
+  --brand-light: #e77f3d;
+  --gold: #b08d3e;
+  --paper: #fbfaf7;
+  --paper-100: #f6f3ec;
+  --paper-200: #efe9dd;
+  --border: #e5dccb;
+  --ink: #1a1a1a;
+  --ink-soft: #3d3d3d;
+  --ink-muted: #6b6b6b;
 
-  /* Neutrals */
-  --color-bg:         #ffffff;
-  --color-bg-warm:    #fafaf9;
-  --color-bg-section: #f5f4f2;
-  --color-border:     #e8e6e3;
-  --color-border-light: #f0eee9;
-
-  /* Text */
-  --color-text-primary:   #1a1a1a;
-  --color-text-secondary: #4a4a4a;
-  --color-text-muted:     #8a8a8a;
-  --color-text-light:     #b0aeaa;
-
-  /* Typography */
-  --font-arabic: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
-  --font-latin:  'Inter', system-ui, sans-serif;
-
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
+  --font-display: 'Amiri', 'Georgia', serif;
+  --font-body: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif;
+  --font-latin: 'Inter', system-ui, sans-serif;
 }
 
-/* ============================================================
-   Reset & Base
-   ============================================================ */
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+* { box-sizing: border-box; padding: 0; margin: 0; }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-}
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
-  font-family: var(--font-arabic);
-  background: var(--color-bg);
-  color: var(--color-text-primary);
-  line-height: 1.7;
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.8;
   direction: rtl;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ============================================================
-   Arabic Typography
-   ============================================================ */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-arabic);
-  color: var(--color-text-primary);
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--navy);
   line-height: 1.3;
   font-weight: 700;
-  letter-spacing: 0;
 }
 
-p {
-  line-height: 1.8;
-  color: var(--color-text-secondary);
-}
+p { line-height: 1.9; color: var(--ink-soft); }
 
-a {
-  color: inherit;
-  text-decoration: none;
-  transition: color var(--transition-fast);
+a { color: inherit; text-decoration: none; transition: color 150ms ease; }
+
+::selection { background: var(--brand-light); color: #fff; }
+
+/* ============================================================
+   مكوّنات مساعدة
+   ============================================================ */
+@layer components {
+  /* عنوان قسم مع خط ذهبي/برتقالي */
+  .kicker {
+    @apply inline-flex items-center gap-2 text-xs font-medium tracking-widest uppercase text-brand;
+    font-family: var(--font-body);
+  }
+
+  /* زخرفة فاصلة بنمط عربي */
+  .ornament {
+    @apply flex items-center justify-center gap-3 text-gold;
+  }
+  .ornament::before,
+  .ornament::after {
+    content: '';
+    height: 1px;
+    width: 3rem;
+    background: linear-gradient(to left, transparent, var(--gold));
+  }
+  .ornament::after {
+    background: linear-gradient(to right, transparent, var(--gold));
+  }
+  .ornament--light::before { background: linear-gradient(to left, transparent, #d9c48a); }
+  .ornament--light::after { background: linear-gradient(to right, transparent, #d9c48a); }
+  .ornament--light { color: #d9c48a; }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-brand text-white text-sm font-medium px-6 py-3 rounded transition-all duration-200;
+    font-family: var(--font-body);
+  }
+  .btn-primary:hover { background: #9e3e15; transform: translateY(-1px); }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 border border-navy/25 text-navy text-sm font-medium px-6 py-3 rounded transition-all duration-200;
+    font-family: var(--font-body);
+  }
+  .btn-outline:hover { @apply bg-navy text-white; border-color: var(--navy); }
+
+  .card {
+    @apply bg-white border border-paper-300 rounded-lg transition-all duration-300;
+  }
+  .card:hover { box-shadow: 0 4px 12px rgba(27,46,73,0.08), 0 16px 40px rgba(27,46,73,0.10); transform: translateY(-3px); }
+
+  .chip {
+    @apply inline-flex items-center text-xs font-medium px-3 py-1 rounded-full border transition-colors;
+    font-family: var(--font-body);
+  }
+
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 }
 
 /* ============================================================
-   Brand Utility Classes
+   محتوى المقال (prose) — عربي فخم
    ============================================================ */
-@layer components {
-  /* Orange accent underline for section headings */
-  .section-title {
-    @apply text-2xl font-bold text-navy-900 mb-2 relative inline-block;
-  }
-  .section-title::after {
-    content: '';
-    display: block;
-    width: 2.5rem;
-    height: 3px;
-    background: var(--color-orange);
-    margin-top: 0.5rem;
-    border-radius: 2px;
-  }
-
-  /* Standard card */
-  .card {
-    @apply bg-white border border-warm-200 rounded transition-shadow duration-200;
-  }
-  .card:hover {
-    box-shadow: 0 4px 20px rgba(30, 58, 95, 0.08);
-  }
-
-  /* Primary CTA button */
-  .btn-primary {
-    @apply inline-flex items-center gap-2 bg-brand text-white text-sm font-medium px-6 py-2.5 rounded transition-colors duration-200;
-  }
-  .btn-primary:hover {
-    background: var(--color-orange-dark);
-  }
-
-  /* Outline button */
-  .btn-outline {
-    @apply inline-flex items-center gap-2 border border-navy text-navy text-sm font-medium px-6 py-2.5 rounded transition-colors duration-200;
-  }
-  .btn-outline:hover {
-    @apply bg-navy text-white;
-  }
-
-  /* Navy pill badge */
-  .badge-navy {
-    @apply text-xs font-medium px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700;
-  }
-
-  /* Orange pill badge */
-  .badge-orange {
-    @apply text-xs font-medium px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700;
-  }
+.article-body {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  line-height: 2.15;
+  color: var(--ink-soft);
 }
+.article-body p { margin-bottom: 1.5rem; color: var(--ink-soft); }
+.article-body h2,
+.article-body h3 {
+  font-family: var(--font-display);
+  color: var(--navy);
+  margin: 2.25rem 0 1rem;
+  line-height: 1.4;
+}
+.article-body h2 { font-size: 1.75rem; }
+.article-body h3 { font-size: 1.4rem; }
+.article-body a { color: var(--brand); text-decoration: underline; text-underline-offset: 3px; }
+.article-body a:hover { color: #9e3e15; }
+.article-body blockquote {
+  border-inline-start: 3px solid var(--gold);
+  background: var(--paper-100);
+  padding: 1rem 1.5rem;
+  margin: 1.75rem 0;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--navy);
+}
+.article-body ul,
+.article-body ol { margin: 1rem 2rem 1.5rem; }
+.article-body li { margin-bottom: 0.5rem; }
+.article-body img { border-radius: 8px; margin: 1.5rem auto; box-shadow: 0 8px 24px rgba(27,46,73,0.10); }
+.article-body strong { color: var(--navy); font-weight: 600; }
 
 /* ============================================================
    Scrollbar
    ============================================================ */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--color-bg-section); }
-::-webkit-scrollbar-thumb { background: var(--color-navy-light); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-navy); }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--paper-100); }
+::-webkit-scrollbar-thumb { background: #c9b896; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-/* ============================================================
-   LTR override for English pages
-   ============================================================ */
-[lang='en'] {
-  direction: ltr;
-  font-family: var(--font-latin);
-}
+/* LTR للإنجليزية */
+[lang='en'] { direction: ltr; font-family: var(--font-latin); }
+[lang='en'] h1, [lang='en'] h2, [lang='en'] h3 { font-family: 'Inter', serif; }
 
-/* ============================================================
-   Image defaults
-   ============================================================ */
-img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
+img { display: block; max-width: 100%; height: auto; }
 
-/* ============================================================
-   Focus accessibility
-   ============================================================ */
-:focus-visible {
-  outline: 2px solid var(--color-orange);
-  outline-offset: 2px;
-}
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
