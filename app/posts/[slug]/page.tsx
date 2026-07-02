@@ -10,14 +10,22 @@ async function getPost(slug: string, locale: string) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { cookies: { getAll: () => cookieStore.getAll() } }
   );
+    const enc = (s: string) => encodeURIComponent(s).replace(/%[0-9A-F]{2}/g, (m) => m.toLowerCase());
+  const candidates = Array.from(new Set([
+    slug,
+    encodeURIComponent(slug),
+    slug.split('-').map(enc).join('-'),
+    decodeURIComponent(slug),
+  ]));
   const { data } = await supabase
     .from('posts')
     .select(`id, slug, published_at, featured_image_url,
       post_translations!inner(title, excerpt, content, locale)`)
-    .eq('slug', slug)
+            .in('slug', candidates)
     .eq('status', 'published')
     .eq('post_translations.locale', locale)
-    .single();
+            .limit(1)
+        .maybeSingle();
   return data;
 }
 
