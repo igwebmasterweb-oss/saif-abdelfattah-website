@@ -2,12 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Brand CSS Custom Properties
+   Navy  : #1e3a5f  (logo + dark sections on old site)
+   Orange: #e8601c  (headings, CTAs, highlights on old site)
+   ============================================================ */
 :root {
-  --color-primary: #1a365d;
-  --color-accent: #c9a84c;
-  --font-arabic: 'Tajawal', 'IBM Plex Sans Arabic', sans-serif;
+  /* Brand */
+  --color-navy:       #1e3a5f;
+  --color-navy-dark:  #142847;
+  --color-navy-light: #2d5491;
+  --color-orange:     #e8601c;
+  --color-orange-dark:#c4511a;
+  --color-orange-light:#f48a3f;
+
+  /* Neutrals */
+  --color-bg:         #ffffff;
+  --color-bg-warm:    #fafaf9;
+  --color-bg-section: #f5f4f2;
+  --color-border:     #e8e6e3;
+  --color-border-light: #f0eee9;
+
+  /* Text */
+  --color-text-primary:   #1a1a1a;
+  --color-text-secondary: #4a4a4a;
+  --color-text-muted:     #8a8a8a;
+  --color-text-light:     #b0aeaa;
+
+  /* Typography */
+  --font-arabic: 'IBM Plex Sans Arabic', 'Tajawal', 'Cairo', sans-serif;
+  --font-latin:  'Inter', system-ui, sans-serif;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
 }
 
+/* ============================================================
+   Reset & Base
+   ============================================================ */
 * {
   box-sizing: border-box;
   padding: 0;
@@ -16,27 +49,123 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-arabic);
-  background: #ffffff;
-  color: #1a1a1a;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  line-height: 1.7;
   direction: rtl;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography scale for Arabic */
+/* ============================================================
+   Arabic Typography
+   ============================================================ */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-arabic);
+  color: var(--color-text-primary);
+  line-height: 1.3;
   font-weight: 700;
-  line-height: 1.4;
+  letter-spacing: 0;
 }
 
 p {
   line-height: 1.8;
+  color: var(--color-text-secondary);
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+/* ============================================================
+   Brand Utility Classes
+   ============================================================ */
+@layer components {
+  /* Orange accent underline for section headings */
+  .section-title {
+    @apply text-2xl font-bold text-navy-900 mb-2 relative inline-block;
+  }
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 3px;
+    background: var(--color-orange);
+    margin-top: 0.5rem;
+    border-radius: 2px;
+  }
+
+  /* Standard card */
+  .card {
+    @apply bg-white border border-warm-200 rounded transition-shadow duration-200;
+  }
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(30, 58, 95, 0.08);
+  }
+
+  /* Primary CTA button */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-brand text-white text-sm font-medium px-6 py-2.5 rounded transition-colors duration-200;
+  }
+  .btn-primary:hover {
+    background: var(--color-orange-dark);
+  }
+
+  /* Outline button */
+  .btn-outline {
+    @apply inline-flex items-center gap-2 border border-navy text-navy text-sm font-medium px-6 py-2.5 rounded transition-colors duration-200;
+  }
+  .btn-outline:hover {
+    @apply bg-navy text-white;
+  }
+
+  /* Navy pill badge */
+  .badge-navy {
+    @apply text-xs font-medium px-2.5 py-0.5 rounded-full bg-navy-50 text-navy-700;
+  }
+
+  /* Orange pill badge */
+  .badge-orange {
+    @apply text-xs font-medium px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700;
+  }
+}
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg-section); }
+::-webkit-scrollbar-thumb { background: var(--color-navy-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-navy); }
+
+/* ============================================================
+   LTR override for English pages
+   ============================================================ */
+[lang='en'] {
+  direction: ltr;
+  font-family: var(--font-latin);
+}
+
+/* ============================================================
+   Image defaults
+   ============================================================ */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================================
+   Focus accessibility
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 2px;
 }
