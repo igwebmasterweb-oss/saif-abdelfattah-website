@@ -5,6 +5,8 @@ import PostCard from '@/components/PostCard';
 import HeroSection from '@/components/HeroSection';
 import StatBar from '@/components/StatBar';
 import AboutSnippet from '@/components/AboutSnippet';
+import QuotesCarousel from '@/components/QuotesCarousel';
+import WaqfIntro from '@/components/WaqfIntro';
 import Milestones from '@/components/Milestones';
 import BookGallery from '@/components/BookGallery';
 import CentersStrip from '@/components/CentersStrip';
@@ -47,8 +49,14 @@ export default async function HomePage({ searchParams }: Props) {
       {/* ===== ABOUT SNIPPET ===== */}
       <AboutSnippet locale={loc} />
 
+      {/* ===== QUOTES CAROUSEL ===== */}
+      <QuotesCarousel locale={loc} />
+
+      {/* ===== WAQF INTRO (logo + about project) ===== */}
+      <WaqfIntro locale={loc} />
+
       {/* ===== FEATURE + LATEST ===== */}
-      <section className="bg-paper-100 border-y border-paper-300">
+      <section>
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
           <div className="mb-10">
             <p className="kicker mb-2">{t.latest}</p>
@@ -74,13 +82,15 @@ export default async function HomePage({ searchParams }: Props) {
 
       {/* ===== EDITORS' PICKS / MOST READ ===== */}
       {picks.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-          <div className="mb-8">
-            <p className="kicker mb-2">{t.picksKicker}</p>
-            <h2 className="font-display text-3xl font-bold text-navy">{t.picksTitle}</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-x-10 gap-y-1">
-            {picks.map((p) => <PostCard key={p.id} post={p} locale={loc} variant="list" />)}
+        <section className="bg-paper-100 border-y border-paper-300">
+          <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+            <div className="mb-8">
+              <p className="kicker mb-2">{t.picksKicker}</p>
+              <h2 className="font-display text-3xl font-bold text-navy">{t.picksTitle}</h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-x-10 gap-y-1">
+              {picks.map((p) => <PostCard key={p.id} post={p} locale={loc} variant="list" />)}
+            </div>
           </div>
         </section>
       )}
@@ -90,7 +100,8 @@ export default async function HomePage({ searchParams }: Props) {
 
       {/* ===== CATEGORIES (expanded) ===== */}
       {topCats.length > 0 && (
-        <section className="max-w-6xl mx-auto px-6 py-16 md:py-20">
+        <section className="bg-paper-100 border-y border-paper-300 max-w-full">
+          <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
           <div className="mb-8 text-center">
             <p className="kicker justify-center mb-2">{t.categories}</p>
             <h2 className="font-display text-3xl font-bold text-navy">{t.browseTopic}</h2>
@@ -103,6 +114,7 @@ export default async function HomePage({ searchParams }: Props) {
                 <span className="ms-2 text-ink-faint">{c.count}</span>
               </Link>
             ))}
+          </div>
           </div>
         </section>
       )}

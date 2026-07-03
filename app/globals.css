@@ -108,6 +108,16 @@ a { color: inherit; text-decoration: none; transition: color 150ms ease; }
   .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 }
 
+/* حركة تلاشٍ لطيفة للمقولات المتبدّلة */
+.quote-fade { animation: quoteFade 700ms ease both; }
+@keyframes quoteFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quote-fade { animation: none; }
+}
+
 /* ============================================================
    محتوى المقال (prose) — عربي فخم
    ============================================================ */

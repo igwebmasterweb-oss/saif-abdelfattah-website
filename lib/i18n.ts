@@ -19,6 +19,12 @@ export const SITE = {
   },
 } as const;
 
+// روابط التواصل الاجتماعي الرسمية
+export const SOCIAL = [
+  { name: 'Facebook', href: 'https://www.facebook.com/saifabdelfattah' },
+  { name: 'X', href: 'https://twitter.com/Saif_abdelfatah' },
+] as const;
+
 export const NAV = {
   ar: {
     home: 'الرئيسية',
@@ -57,6 +63,7 @@ export const NAV = {
     articlesLabel: 'مقال ودراسة',
     booksLabel: 'كتاب ومؤلَّف',
     centersLabel: 'مركزًا ومؤسسة',
+    follow: 'تابعونا',
   },
   en: {
     home: 'Home',
@@ -95,5 +102,6 @@ export const NAV = {
     articlesLabel: 'articles & studies',
     booksLabel: 'books & works',
     centersLabel: 'centers & institutions',
+    follow: 'Follow',
   },
 } as const;
