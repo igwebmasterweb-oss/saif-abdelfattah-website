@@ -118,6 +118,12 @@ a { color: inherit; text-decoration: none; transition: color 150ms ease; }
   .quote-fade { animation: none; }
 }
 
+/* طبقة البحث العلوية */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* ============================================================
    محتوى المقال (prose) — عربي فخم
    ============================================================ */
