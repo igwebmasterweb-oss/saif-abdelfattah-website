@@ -4,7 +4,6 @@ import Footer from '@/components/Footer';
 import PostCard from '@/components/PostCard';
 import HeroSection from '@/components/HeroSection';
 import StatBar from '@/components/StatBar';
-import AboutSnippet from '@/components/AboutSnippet';
 import QuotesCarousel from '@/components/QuotesCarousel';
 import WaqfIntro from '@/components/WaqfIntro';
 import Milestones from '@/components/Milestones';
@@ -25,7 +24,7 @@ export default async function HomePage({ searchParams }: Props) {
   const t = NAV[loc];
 
   const [posts, cats] = await Promise.all([
-    getLatestPosts(loc, 13),
+    getLatestPosts(loc, 7),
     getCategories(loc),
   ]);
 
@@ -33,7 +32,6 @@ export default async function HomePage({ searchParams }: Props) {
 
   const feature = posts[0];
   const rest = posts.slice(1, 7);
-  const picks = posts.slice(7, 13);
   const topCats = cats.slice(0, 12);
 
   return (
@@ -46,14 +44,11 @@ export default async function HomePage({ searchParams }: Props) {
       {/* ===== STATS ===== */}
       <StatBar locale={loc} articles={totalArticles} />
 
-      {/* ===== ABOUT SNIPPET ===== */}
-      <AboutSnippet locale={loc} />
+      {/* ===== WAQF INTRO (logo + about project) — تحت الهيرو مباشرة بدل قسم عن الكاتب ===== */}
+      <WaqfIntro locale={loc} />
 
       {/* ===== QUOTES CAROUSEL ===== */}
       <QuotesCarousel locale={loc} />
-
-      {/* ===== WAQF INTRO (logo + about project) ===== */}
-      <WaqfIntro locale={loc} />
 
       {/* ===== FEATURE + LATEST ===== */}
       <section>
@@ -79,21 +74,6 @@ export default async function HomePage({ searchParams }: Props) {
           </div>
         </div>
       </section>
-
-      {/* ===== EDITORS' PICKS / MOST READ ===== */}
-      {picks.length > 0 && (
-        <section className="bg-paper-100 border-y border-paper-300">
-          <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-            <div className="mb-8">
-              <p className="kicker mb-2">{t.picksKicker}</p>
-              <h2 className="font-display text-3xl font-bold text-navy">{t.picksTitle}</h2>
-            </div>
-            <div className="grid md:grid-cols-2 gap-x-10 gap-y-1">
-              {picks.map((p) => <PostCard key={p.id} post={p} locale={loc} variant="list" />)}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* ===== MILESTONES ===== */}
       <Milestones locale={loc} />

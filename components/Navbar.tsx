@@ -29,12 +29,13 @@ export default function Navbar({ locale = 'ar' }: { locale?: string }) {
     <nav dir={isAr ? 'rtl' : 'ltr'} className="sticky top-0 z-50 bg-paper-50/90 backdrop-blur-md border-b border-paper-300">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         <div className="h-16 flex items-center justify-between">
-          {/* الشعار */}
-          <Link href={`/?lang=${loc}`} className="flex items-center gap-2.5 group">
-            <Logo />
-            <span className="font-display text-lg md:text-xl font-bold text-navy group-hover:text-brand transition-colors">
-              {site.name}
-            </span>
+          {/* الشعار: لوجو الموقع القديم بالخط العربي */}
+          <Link href={`/?lang=${loc}`} className="flex items-center group" aria-label={site.name}>
+            <img
+              src="/images/logo-org.png"
+              alt={site.name}
+              className="h-9 md:h-11 w-auto object-contain mix-blend-multiply transition-opacity group-hover:opacity-80"
+            />
           </Link>
 
           {/* روابط سطح المكتب */}
@@ -79,17 +80,5 @@ export default function Navbar({ locale = 'ar' }: { locale?: string }) {
         )}
       </div>
     </nav>
-  );
-}
-
-/** شعار: قلم/محبرة مُجرّد داخل إطار — يرمز للكتابة والفكر */
-function Logo() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" aria-label="logo" className="text-brand">
-      <rect x="2.5" y="2.5" width="35" height="35" rx="8" stroke="currentColor" strokeWidth="2" />
-      <path d="M13 27L27 13" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M24 10.5L29.5 16L27 13Z" fill="currentColor" />
-      <circle cx="13.5" cy="26.5" r="2.2" fill="#1b2e49" />
-    </svg>
   );
 }

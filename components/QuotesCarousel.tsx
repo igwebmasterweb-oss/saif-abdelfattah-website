@@ -6,25 +6,20 @@ import { PROFILE } from '@/lib/profile';
 export default function QuotesCarousel({ locale }: { locale: string }) {
   const isAr = locale !== 'en';
   const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
   const n = QUOTES.length;
 
   const go = useCallback((next: number) => setI((next + n) % n), [n]);
 
+  // حركة تلقائية دائمة — تعاد بعد أي تنقل يدوي دون توقف
   useEffect(() => {
-    if (paused) return;
-    const t = setInterval(() => setI((v) => (v + 1) % n), 7000);
+    const t = setInterval(() => setI((v) => (v + 1) % n), 6000);
     return () => clearInterval(t);
-  }, [paused, n]);
+  }, [n, i]);
 
   const q = QUOTES[i];
 
   return (
-    <section
-      className="relative overflow-hidden bg-navy-900 text-white"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
+    <section className="relative overflow-hidden bg-navy-900 text-white">
       {/* زخرفة خلفية */}
       <div
         className="absolute inset-0 opacity-[0.06]"

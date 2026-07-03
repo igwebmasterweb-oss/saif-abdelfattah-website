@@ -7,7 +7,7 @@ export default function WaqfIntro({ locale }: { locale: string }) {
   const isAr = loc === 'ar';
 
   return (
-    <section className="bg-paper-100 border-y border-paper-300">
+    <section className="bg-paper-50 border-b border-paper-300">
       <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
         <div className="grid md:grid-cols-[minmax(0,0.9fr)_1.4fr] gap-10 md:gap-14 items-center">
           {/* اللوجو */}

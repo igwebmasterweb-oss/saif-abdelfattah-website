@@ -6,28 +6,42 @@ export default function Milestones({ locale }: { locale: string }) {
   const t = NAV[loc];
 
   return (
-    <section className="bg-paper-50">
-      <div className="max-w-4xl mx-auto px-6 py-16 md:py-24">
+    <section className="bg-navy-900 text-white relative overflow-hidden">
+      {/* زخرفة خلفية */}
+      <div
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 12% 20%, #c9a95a 0, transparent 40%), radial-gradient(circle at 88% 85%, #c04f17 0, transparent 44%)',
+        }}
+      />
+      <div className="relative max-w-6xl mx-auto px-6 py-16 md:py-20">
         <div className="text-center mb-12">
-          <p className="kicker justify-center mb-2">{t.milestonesKicker}</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-navy">
+          <p className="kicker text-gold-300 justify-center mb-2">{t.milestonesKicker}</p>
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-white">
             {t.milestonesTitle}
           </h2>
-          <div className="ornament mt-4"><span>◆</span></div>
+          <div className="ornament ornament--light mt-4"><span>◆</span></div>
         </div>
 
-        <ol className="relative border-s-2 border-gold-300/50 ms-3 md:ms-6 space-y-9">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {MILESTONES.map((m, i) => (
-            <li key={i} className="relative ps-8 md:ps-10">
-              <span className="absolute -start-[9px] top-1.5 w-4 h-4 rounded-full bg-brand ring-4 ring-paper-50" />
-              <div className="font-display text-gold-500 text-lg font-bold mb-1">{m.year}</div>
-              <h3 className="font-display text-xl font-bold text-navy leading-snug mb-1">
+            <div
+              key={i}
+              className="group relative rounded-xl bg-white/[0.04] border border-white/10 p-5 transition-all hover:bg-white/[0.07] hover:border-gold-400/50"
+            >
+              <span className="inline-block font-display text-lg font-extrabold text-navy bg-gold-300 rounded-md px-3 py-0.5 mb-3">
+                {m.year}
+              </span>
+              <h3 className="font-display text-lg font-bold text-white leading-snug mb-1.5">
                 {m.title}
               </h3>
-              {m.detail && <p className="text-ink-muted text-sm leading-relaxed">{m.detail}</p>}
-            </li>
+              {m.detail && (
+                <p className="text-navy-100/70 text-sm leading-relaxed">{m.detail}</p>
+              )}
+            </div>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );
