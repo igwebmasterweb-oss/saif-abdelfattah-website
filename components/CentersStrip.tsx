@@ -24,7 +24,7 @@ export default function CentersStrip({ locale }: { locale: string }) {
                 src={c.src}
                 alt={c.name}
                 loading="lazy"
-                className="max-h-16 max-w-[80%] object-contain grayscale opacity-70 transition-all duration-300 group-hover:grayscale-0 group-hover:opacity-100"
+                className="max-h-16 max-w-[80%] object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </div>
           ))}
